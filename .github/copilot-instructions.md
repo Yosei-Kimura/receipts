@@ -1,0 +1,9 @@
+- [x] Clarify Project Requirements
+  - Node.jsで動作する領収書管理ウェブアプリ。複数イベント・チームごとに予算管理、領収書写真アップロード、Slack投稿機能付き。ロリポップサーバーで動作するようにExpressを利用。
+- [ ] Scaffold the Project
+- [ ] Customize the Project
+- [ ] Install Required Extensions
+- [ ] Compile the Project
+- [ ] Create and Run Task
+- [ ] Launch the Project
+- [ ] Ensure Documentation is Complete
