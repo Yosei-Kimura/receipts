@@ -83,6 +83,9 @@ $teams = $stmt->fetchAll();
                         <div class="amount">✅ 設定済み</div>
                     </div>
                 </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="budget_overview.php?event_id=<?= $event_id ?>" class="btn btn-info">📊 予算管理概要を見る</a>
+                </div>
             </div>
 
             <h2 class="subtitle">👥 チーム一覧</h2>

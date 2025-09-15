@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: mysql327.phy.lolipop.lan
--- 生成日時: 2025 年 9 月 11 日 22:46
+-- 生成日時: 2025 年 9 月 15 日 01:00
 -- サーバのバージョン： 8.0.35
 -- PHP のバージョン: 8.2.12
 
@@ -39,8 +39,23 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`id`, `name`, `budget`, `slack_channel_url`) VALUES
-(2, 'KFイベント', 111, 'https://hooks.slack.com/services/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'),
-(3, 'sksk', 2222, 'https://hooks.slack.com/services/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');
+(2, 'KFイベント', 111, 'https://hooks.slack.com/services/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');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `planned_expenses`
+--
+
+CREATE TABLE `planned_expenses` (
+  `id` int NOT NULL,
+  `team_id` int NOT NULL,
+  `purpose` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `estimated_amount` int NOT NULL,
+  `person_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -51,10 +66,18 @@ INSERT INTO `events` (`id`, `name`, `budget`, `slack_channel_url`) VALUES
 CREATE TABLE `receipts` (
   `id` int NOT NULL,
   `team_id` int NOT NULL,
+  `person_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `amount` int NOT NULL,
   `image_path` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `receipts`
+--
+
+INSERT INTO `receipts` (`id`, `team_id`, `person_name`, `amount`, `image_path`, `created_at`) VALUES
+(10, 6, '', 11, 'assets/uploads/20250911230310__インスタグラム (1).png', '2025-09-11 23:03:10');
 
 -- --------------------------------------------------------
 
@@ -70,6 +93,13 @@ CREATE TABLE `teams` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- テーブルのデータのダンプ `teams`
+--
+
+INSERT INTO `teams` (`id`, `event_id`, `name`, `budget`) VALUES
+(6, 2, 'ステージ', 10000);
+
+--
 -- ダンプしたテーブルのインデックス
 --
 
@@ -78,6 +108,13 @@ CREATE TABLE `teams` (
 --
 ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `planned_expenses`
+--
+ALTER TABLE `planned_expenses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `team_id` (`team_id`);
 
 --
 -- テーブルのインデックス `receipts`
@@ -104,20 +141,32 @@ ALTER TABLE `events`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- テーブルの AUTO_INCREMENT `planned_expenses`
+--
+ALTER TABLE `planned_expenses`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- テーブルの AUTO_INCREMENT `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- テーブルの AUTO_INCREMENT `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- ダンプしたテーブルの制約
 --
+
+--
+-- テーブルの制約 `planned_expenses`
+--
+ALTER TABLE `planned_expenses`
+  ADD CONSTRAINT `planned_expenses_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE;
 
 --
 -- テーブルの制約 `receipts`

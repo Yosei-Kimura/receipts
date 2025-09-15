@@ -1,6 +1,6 @@
 <?php
 // Slack通知用関数
-function post_receipt_to_slack($event, $team, $amount, $person_name = '') {
+function post_receipt_to_slack($event, $team, $amount, $person_name = '', $purpose = '') {
     // DB接続
     require __DIR__ . '/config/db_connect.php';
     // チームの使用総額
@@ -13,6 +13,7 @@ function post_receipt_to_slack($event, $team, $amount, $person_name = '') {
         . "イベント: " . $event['name'] . "\n"
         . "チーム: " . $team['name'] . "\n"
         . ($person_name ? "個人名: " . $person_name . "\n" : "")
+        . ($purpose ? "用途: " . $purpose . "\n" : "")
         . "今回登録金額: " . $amount . "円\n"
         . "チーム予算: " . $team['budget'] . "円\n"
         . "チーム使用総額: " . $used_total . "円\n"

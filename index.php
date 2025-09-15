@@ -45,7 +45,7 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イベント管理システム</title>
+    <title>KFイベント予算管理</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -70,6 +70,7 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
                             <td><span class="img-link">設定済み</span></td>
                             <td>
                                 <a href="event.php?event_id=<?= $event['id'] ?>" class="btn btn-primary btn-sm">選択</a>
+                                <a href="budget_overview.php?event_id=<?= $event['id'] ?>" class="btn btn-info btn-sm">予算概要</a>
                                 <a href="?edit_event=<?= $event['id'] ?>" class="btn btn-edit btn-sm">編集</a>
                                 <a href="?delete_event=<?= $event['id'] ?>" 
                                    onclick="return confirm('本当に削除しますか？');" 
