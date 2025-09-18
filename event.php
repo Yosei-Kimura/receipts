@@ -82,10 +82,6 @@ $teams = $stmt->fetchAll();
                         <h3>総予算</h3>
                         <div class="amount">¥<?= number_format($event['budget']) ?></div>
                     </div>
-                    <div class="info-card">
-                        <h3>Slack通知</h3>
-                        <div class="amount">✅ 設定済み</div>
-                    </div>
                 </div>
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="budget_overview.php?event_id=<?= $event_id ?>" class="btn btn-info">📊 予算管理概要を見る</a>

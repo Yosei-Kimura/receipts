@@ -31,24 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_receipt'])) {
     $amount = $_POST['amount'] ?? 0;
     $person_name = $_POST['person_name'] ?? '';
     $purpose = $_POST['purpose'] ?? '';
-    $image_path = '';
-    if (isset($_FILES['receipt_image']) && $_FILES['receipt_image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'assets/uploads/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        $filename = date('YmdHis') . '_' . basename($_FILES['receipt_image']['name']);
-        $target = $upload_dir . $filename;
-        if (move_uploaded_file($_FILES['receipt_image']['tmp_name'], $target)) {
-            $image_path = $target;
-        }
-    }
     if ($amount && $person_name) {
-        $stmt = $pdo->prepare('INSERT INTO receipts (team_id, person_name, purpose, amount, image_path) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$team_id, $person_name, $purpose, $amount, $image_path]);
-        // Slack通知処理
-        require_once __DIR__ . '/slack_post.php';
-        post_receipt_to_slack($event, $team, $amount, $person_name, $purpose);
+        $stmt = $pdo->prepare('INSERT INTO receipts (team_id, person_name, purpose, amount) VALUES (?, ?, ?, ?)');
+        $stmt->execute([$team_id, $person_name, $purpose, $amount]);
         header('Location: team.php?team_id=' . $team_id . '&event_id=' . $event_id);
         exit;
     }
@@ -60,21 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_receipt'])) {
     $amount = $_POST['amount'] ?? 0;
     $person_name = $_POST['person_name'] ?? '';
     $purpose = $_POST['purpose'] ?? '';
-    $image_path = $_POST['old_image_path'] ?? '';
-    if (isset($_FILES['receipt_image']) && $_FILES['receipt_image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'assets/uploads/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        $filename = date('YmdHis') . '_' . basename($_FILES['receipt_image']['name']);
-        $target = $upload_dir . $filename;
-        if (move_uploaded_file($_FILES['receipt_image']['tmp_name'], $target)) {
-            $image_path = $target;
-        }
-    }
     if ($edit_id && $amount && $person_name) {
-        $stmt = $pdo->prepare('UPDATE receipts SET person_name=?, purpose=?, amount=?, image_path=? WHERE id=?');
-        $stmt->execute([$person_name, $purpose, $amount, $image_path, $edit_id]);
+        $stmt = $pdo->prepare('UPDATE receipts SET person_name=?, purpose=?, amount=? WHERE id=?');
+        $stmt->execute([$person_name, $purpose, $amount, $edit_id]);
         header('Location: team.php?team_id=' . $team_id . '&event_id=' . $event_id);
         exit;
     }
@@ -276,9 +249,8 @@ $budget_left = $team['budget'] - $used_total;
                 $edit_receipt = $stmt->fetch();
                 if ($edit_receipt): ?>
                 <h2 class="subtitle">✏️ 領収書編集</h2>
-                <form method="post" enctype="multipart/form-data" class="form">
+                <form method="post" class="form">
                     <input type="hidden" name="edit_id" value="<?= $edit_receipt['id'] ?>">
-                    <input type="hidden" name="old_image_path" value="<?= htmlspecialchars($edit_receipt['image_path']) ?>">
                     <div class="form-group">
                         <label>個人名</label>
                         <input type="text" name="person_name" value="<?= htmlspecialchars($edit_receipt['person_name']) ?>" required class="input">
@@ -290,13 +262,6 @@ $budget_left = $team['budget'] - $used_total;
                     <div class="form-group">
                         <label>金額（円）</label>
                         <input type="number" name="amount" value="<?= htmlspecialchars($edit_receipt['amount']) ?>" required class="input">
-                    </div>
-                    <div class="form-group">
-                        <label>領収書画像（変更する場合のみ選択）</label>
-                        <input type="file" name="receipt_image" accept="image/*" class="input">
-                        <?php if ($edit_receipt['image_path']): ?>
-                            <p><a href="<?= htmlspecialchars($edit_receipt['image_path']) ?>" target="_blank" class="img-link">📷 現在の画像を確認</a></p>
-                        <?php endif; ?>
                     </div>
                     <div class="text-right">
                         <a href="team.php?team_id=<?= $team_id ?>&event_id=<?= $event_id ?>" class="btn btn-outline">キャンセル</a>
@@ -337,7 +302,7 @@ $budget_left = $team['budget'] - $used_total;
                 <?php endif;
             } else { ?>
                 <h2 class="subtitle">➕ 新しい領収書追加</h2>
-                <form method="post" enctype="multipart/form-data" class="form">
+                <form method="post" class="form">
                     <div class="form-group">
                         <label>個人名</label>
                         <input type="text" name="person_name" required class="input" placeholder="例：田中太郎">
@@ -350,13 +315,8 @@ $budget_left = $team['budget'] - $used_total;
                         <label>金額（円）</label>
                         <input type="number" name="amount" required class="input" placeholder="1000">
                     </div>
-                    <div class="form-group">
-                        <label>領収書画像（任意）</label>
-                        <input type="file" name="receipt_image" accept="image/*" class="input">
-                        <small style="color: #718096;">JPG, PNG形式の画像をアップロードできます（任意）</small>
-                    </div>
                     <div class="text-right">
-                        <button type="submit" name="add_receipt" class="btn btn-success">追加してSlackに通知</button>
+                        <button type="submit" name="add_receipt" class="btn btn-success">追加</button>
                     </div>
                 </form>
                 

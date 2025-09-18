@@ -5,10 +5,9 @@ require_once __DIR__ . '/config/db_connect.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_event'])) {
     $name = $_POST['name'] ?? '';
     $budget = $_POST['budget'] ?? 0;
-    $slack_url = $_POST['slack_channel_url'] ?? '';
-    if ($name && $budget && $slack_url) {
-        $stmt = $pdo->prepare('INSERT INTO events (name, budget, slack_channel_url) VALUES (?, ?, ?)');
-        $stmt->execute([$name, $budget, $slack_url]);
+    if ($name && $budget) {
+        $stmt = $pdo->prepare('INSERT INTO events (name, budget) VALUES (?, ?)');
+        $stmt->execute([$name, $budget]);
         header('Location: index.php');
         exit;
     }
@@ -19,10 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_event'])) {
     $edit_id = $_POST['edit_id'] ?? '';
     $name = $_POST['name'] ?? '';
     $budget = $_POST['budget'] ?? 0;
-    $slack_url = $_POST['slack_channel_url'] ?? '';
-    if ($edit_id && $name && $budget && $slack_url) {
-        $stmt = $pdo->prepare('UPDATE events SET name=?, budget=?, slack_channel_url=? WHERE id=?');
-        $stmt->execute([$name, $budget, $slack_url, $edit_id]);
+    if ($edit_id && $name && $budget) {
+        $stmt = $pdo->prepare('UPDATE events SET name=?, budget=? WHERE id=?');
+        $stmt->execute([$name, $budget, $edit_id]);
         header('Location: index.php');
         exit;
     }
@@ -62,7 +60,6 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
                         <tr>
                             <th>イベント名</th>
                             <th>予算</th>
-                            <th>Slack URL</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -71,7 +68,6 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
                         <tr>
                             <td><strong><?= htmlspecialchars($event['name']) ?></strong></td>
                             <td>¥<?= number_format($event['budget']) ?></td>
-                            <td><span class="img-link">設定済み</span></td>
                             <td>
                                 <a href="event.php?event_id=<?= $event['id'] ?>" class="btn btn-primary btn-sm">選択</a>
                                 <a href="budget_overview.php?event_id=<?= $event['id'] ?>" class="btn btn-info btn-sm">予算概要</a>
@@ -105,10 +101,6 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
                         <label>予算</label>
                         <input type="number" name="budget" value="<?= htmlspecialchars($edit_event['budget']) ?>" required class="input">
                     </div>
-                    <div class="form-group">
-                        <label>Slack Webhook URL</label>
-                        <input type="url" name="slack_channel_url" value="<?= htmlspecialchars($edit_event['slack_channel_url']) ?>" required class="input">
-                    </div>
                     <div class="text-right">
                         <a href="index.php" class="btn btn-outline">キャンセル</a>
                         <button type="submit" name="update_event" class="btn btn-primary">更新</button>
@@ -125,10 +117,6 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
                     <div class="form-group">
                         <label>予算</label>
                         <input type="number" name="budget" required class="input" placeholder="100000">
-                    </div>
-                    <div class="form-group">
-                        <label>Slack Webhook URL</label>
-                        <input type="url" name="slack_channel_url" required class="input" placeholder="https://hooks.slack.com/...">
                     </div>
                     <div class="text-right">
                         <button type="submit" name="add_event" class="btn btn-success">追加</button>
