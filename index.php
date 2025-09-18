@@ -47,11 +47,15 @@ $events = $pdo->query('SELECT * FROM events ORDER BY id DESC')->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KFイベント予算管理</title>
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/KFロゴ.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/KFロゴ.svg">
+    <link rel="manifest" href="assets/manifest.json">
+    <meta name="theme-color" content="#FF8C00">
 </head>
 <body>
     <div class="container">
         <div class="main-card">
-            <h1 class="title">📅 イベント管理システム</h1>
+            <h1 class="title">KFイベント予算管理</h1>
             <div class="table-container">
                 <table class="styled-table">
                     <thead>

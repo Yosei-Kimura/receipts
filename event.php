@@ -62,6 +62,10 @@ $teams = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>イベント詳細 - <?= htmlspecialchars($event['name']) ?></title>
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/KFロゴ.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/KFロゴ.svg">
+    <link rel="manifest" href="assets/manifest.json">
+    <meta name="theme-color" content="#4A90E2">
 </head>
 <body>
     <div class="container">

@@ -1,0 +1,14 @@
+# Simple KF logo placeholder for favicon.ico
+# This is a text-based representation
+# For actual ICO generation, use online tools like:
+# https://realfavicongenerator.net/
+# https://favicon.io/
+# https://www.favicon-generator.org/
+
+# Upload the SVG files to these services to generate proper ICO and PNG files
+Write-Host "KF logo SVG files created successfully!"
+Write-Host "For best browser compatibility, please:"
+Write-Host "1. Visit https://realfavicongenerator.net/"
+Write-Host "2. Upload favicon.svg"
+Write-Host "3. Download the generated favicon package"
+Write-Host "4. Replace the SVG files with the generated PNG/ICO files if needed"

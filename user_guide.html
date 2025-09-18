@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KF領収書管理システム 使い方ガイド</title>
+    <style>
+        body {
+            font-family: "Yu Gothic", "游ゴシック", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        h2 {
+            color: #4A90E2;
+            border-left: 5px solid #4A90E2;
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .step-box {
+            background: #f8f9ff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .step-number {
+            background: #4A90E2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .alert-success {
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+        }
+        
+        ol, ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+        }
+        
+        @media print {
+            body {
+                margin: 0;
+                padding: 15px;
+            }
+            
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .step-box, .feature-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧾 KF領収書管理システム</h1>
+        <p>使い方ガイド</p>
+    </div>
+
+    <h2><span class="emoji">📱</span>システム概要</h2>
+    <p>このシステムは、イベントや活動での予算管理と領収書管理を簡単に行えるWebアプリケーションです。スマートフォンやパソコンから誰でも簡単に使用できます。</p>
+
+    <h2><span class="emoji">🚀</span>基本的な使い方の流れ</h2>
+    
+    <div class="step-box">
+        <h3><span class="step-number">1</span>イベントを作成する</h3>
+        <ol>
+            <li>トップページで「新しいイベント追加」フォームに入力</li>
+            <li><strong>イベント名</strong>: 「春の学園祭」「文化祭」など</li>
+            <li><strong>予算</strong>: 総予算額を円単位で入力（例：100000）</li>
+            <li><strong>Slack Webhook URL</strong>: 通知先のSlackチャンネルのURL</li>
+            <li>「追加」ボタンをクリック</li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3><span class="step-number">2</span>チームを作成する</h3>
+        <ol>
+            <li>作成したイベントの「選択」ボタンをクリック</li>
+            <li>チーム一覧画面で「新しいチーム追加」フォームに入力</li>
+            <li><strong>チーム名</strong>: 「実行委員会」「装飾チーム」など</li>
+            <li><strong>予算</strong>: そのチームに割り当てる予算額</li>
+            <li>「追加」ボタンをクリック</li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3><span class="step-number">3</span>領収書を登録する</h3>
+        <ol>
+            <li>チームの「選択」ボタンをクリック</li>
+            <li>「新しい領収書追加」フォームに入力</li>
+            <li><strong>個人名</strong>: 支払いをした人の名前</li>
+            <li><strong>用途</strong>: 何を買ったか（例：「装飾用品」「食材」）</li>
+            <li><strong>金額</strong>: 支払った金額を円単位で入力</li>
+            <li><strong>領収書画像</strong>: スマホで撮った領収書の写真をアップロード</li>
+            <li>「追加してSlackに通知」ボタンをクリック</li>
+            <li>自動的にSlackに通知が送信されます</li>
+        </ol>
+    </div>
+
+    <h2><span class="emoji">💡</span>便利な機能</h2>
+    
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3><span class="emoji">📋</span>使用予定用途の登録</h3>
+            <p>実際に買い物をする前に、使用予定を事前に登録できます：</p>
+            <ul>
+                <li><strong>用途</strong>: 予定している購入内容</li>
+                <li><strong>担当者名</strong>: 買い物担当者</li>
+                <li><strong>予定金額</strong>: 使用予定の金額</li>
+                <li><strong>備考</strong>: 詳細な内容や注意事項</li>
+            </ul>
+        </div>
+        
+        <div class="feature-card">
+            <h3><span class="emoji">📊</span>予算管理概要の確認</h3>
+            <p>「予算概要」ボタンから以下を確認できます：</p>
+            <ul>
+                <li><strong>イベント全体の予算状況</strong>: 総予算、使用済み、残予算</li>
+                <li><strong>チーム別詳細</strong>: 各チームの使用状況と使用率</li>
+                <li><strong>視覚的な表示</strong>: 使用率をバーで表示</li>
+                <li><strong>アラート機能</strong>: 予算超過の警告</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2><span class="emoji">🎯</span>実際の使用例：学園祭の予算管理</h2>
+    
+    <div class="step-box">
+        <ol>
+            <li><strong>イベント作成</strong>: 「秋の学園祭2025」予算50万円</li>
+            <li><strong>チーム作成</strong>: 
+                <ul>
+                    <li>装飾チーム（15万円）</li>
+                    <li>食品販売チーム（20万円）</li>
+                    <li>ステージチーム（10万円）</li>
+                </ul>
+            </li>
+            <li><strong>使用予定登録</strong>: 装飾チームが「風船購入」5000円を事前登録</li>
+            <li><strong>領収書登録</strong>: 実際に風船を購入したら領収書を撮影してアップロード</li>
+            <li><strong>Slack通知</strong>: チームメンバー全員に購入情報が自動通知</li>
+        </ol>
+    </div>
+
+    <h2><span class="emoji">📱</span>スマートフォンでの使い方</h2>
+    
+    <h3><span class="emoji">🛒</span>外出先での領収書登録</h3>
+    <ol>
+        <li>買い物後、その場でスマホからシステムにアクセス</li>
+        <li>領収書をスマホのカメラで撮影</li>
+        <li>すぐに金額と用途を入力して登録</li>
+        <li>リアルタイムでチームに共有</li>
+    </ol>
+
+    <h3><span class="emoji">💰</span>予算確認</h3>
+    <ul>
+        <li>買い物前にスマホで残予算を確認</li>
+        <li>使用予定を登録して予算オーバーを防止</li>
+    </ul>
+
+    <h2><span class="emoji">⚠️</span>注意事項とコツ</h2>
+    
+    <div class="alert alert-info">
+        <h3><span class="emoji">📸</span>領収書登録時のコツ</h3>
+        <ul>
+            <li><span class="highlight">写真は鮮明に</span>: 金額と店名が読める程度の画質で撮影</li>
+            <li><span class="highlight">すぐに登録</span>: 買い物後はできるだけ早く登録</li>
+            <li><span class="highlight">用途は具体的に</span>: 「装飾用品」より「風船・リボン」の方が分かりやすい</li>
+        </ul>
+    </div>
+    
+    <div class="alert alert-success">
+        <h3><span class="emoji">💡</span>予算管理のコツ</h3>
+        <ul>
+            <li><span class="highlight">使用予定の活用</span>: 大きな買い物は事前に登録して調整</li>
+            <li><span class="highlight">定期的な確認</span>: 週1回程度は予算概要画面で全体状況を確認</li>
+            <li><span class="highlight">チーム間の連携</span>: Slack通知を活用してチーム間で情報共有</li>
+        </ul>
+    </div>
+
+    <h2><span class="emoji">🔔</span>アラート機能</h2>
+    
+    <div class="alert alert-warning">
+        <p>システムが自動的に以下の警告を表示します：</p>
+        <ul>
+            <li><strong>🔴 予算超過</strong>: チームの使用率が90%を超えた場合</li>
+            <li><strong>🟡 予算注意</strong>: 使用予定込みで予算オーバーの可能性がある場合</li>
+            <li><strong>📢 Slack通知</strong>: 領収書登録時に金額、用途、残予算を自動送信</li>
+        </ul>
+    </div>
+
+    <h2><span class="emoji">🎯</span>まとめ：誰でも簡単3ステップ</h2>
+    
+    <div class="step-box">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>1. <span class="emoji">📝</span>登録</h3>
+                <p>イベント→チーム→領収書の順で登録</p>
+            </div>
+            <div class="feature-card">
+                <h3>2. <span class="emoji">📊</span>確認</h3>
+                <p>予算概要で使用状況をチェック</p>
+            </div>
+            <div class="feature-card">
+                <h3>3. <span class="emoji">🔔</span>共有</h3>
+                <p>Slack通知で自動的にチーム内共有</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-success">
+        <p><strong>このシステムを使うことで、複数人での予算管理が透明で効率的になり、予算オーバーを防ぎながらスムーズなイベント運営が可能になります。</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>KF領収書管理システム 使い方ガイド</p>
+        <p>作成日: 2025年9月16日</p>
+    </div>
+</body>
+</html>
