@@ -16,19 +16,38 @@ if (!$event) {
     exit;
 }
 
-// イベント全体の予算情報を取得
+// イベント全体の予算情報を取得（修正版：JOINによる重複を避ける）
+// 1. チーム予算の合計
+$stmt = $pdo->prepare('SELECT SUM(budget) as total_team_budget FROM teams WHERE event_id = ?');
+$stmt->execute([$event_id]);
+$total_team_budget = $stmt->fetchColumn() ?: 0;
+
+// 2. 使用済み金額の合計
 $stmt = $pdo->prepare('
-    SELECT 
-        SUM(t.budget) as total_team_budget,
-        COALESCE(SUM(r.amount), 0) as total_used_amount,
-        COALESCE(SUM(pe.estimated_amount), 0) as total_planned_amount
-    FROM teams t
-    LEFT JOIN receipts r ON t.id = r.team_id
-    LEFT JOIN planned_expenses pe ON t.id = pe.team_id
+    SELECT COALESCE(SUM(r.amount), 0) as total_used_amount 
+    FROM receipts r 
+    JOIN teams t ON r.team_id = t.id 
     WHERE t.event_id = ?
 ');
 $stmt->execute([$event_id]);
-$event_totals = $stmt->fetch();
+$total_used_amount = $stmt->fetchColumn() ?: 0;
+
+// 3. 使用予定金額の合計
+$stmt = $pdo->prepare('
+    SELECT COALESCE(SUM(pe.estimated_amount), 0) as total_planned_amount 
+    FROM planned_expenses pe 
+    JOIN teams t ON pe.team_id = t.id 
+    WHERE t.event_id = ?
+');
+$stmt->execute([$event_id]);
+$total_planned_amount = $stmt->fetchColumn() ?: 0;
+
+// 結果を配列にまとめる（既存コードとの互換性のため）
+$event_totals = [
+    'total_team_budget' => $total_team_budget,
+    'total_used_amount' => $total_used_amount,
+    'total_planned_amount' => $total_planned_amount
+];
 
 // チームごとの詳細情報を取得
 $stmt = $pdo->prepare('

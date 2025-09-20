@@ -23,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_team'])) {
     if ($team_name && $team_budget) {
         $stmt = $pdo->prepare('INSERT INTO teams (event_id, name, budget) VALUES (?, ?, ?)');
         $stmt->execute([$event_id, $team_name, $team_budget]);
-        header('Location: event.php?event_id=' . $event_id);
-        exit;
+        $success_message = 'チームを追加しました。';
+    } else {
+        $error_message = 'チーム名と予算は必須です。';
     }
 }
 
@@ -36,18 +37,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_team'])) {
     if ($edit_id && $team_name && $team_budget) {
         $stmt = $pdo->prepare('UPDATE teams SET name=?, budget=? WHERE id=?');
         $stmt->execute([$team_name, $team_budget, $edit_id]);
-        header('Location: event.php?event_id=' . $event_id);
-        exit;
+        $success_message = 'チームを更新しました。';
+    } else {
+        $error_message = 'チーム名と予算は必須です。';
     }
 }
 
 // チーム削除処理
-if (isset($_GET['delete_team'])) {
-    $delete_id = $_GET['delete_team'];
-    $stmt = $pdo->prepare('DELETE FROM teams WHERE id=?');
-    $stmt->execute([$delete_id]);
-    header('Location: event.php?event_id=' . $event_id);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_team'])) {
+    $delete_id = $_POST['delete_id'] ?? '';
+    $password = $_POST['delete_password'] ?? '';
+    
+    if ($delete_id && $password) {
+        // イベントのパスワードハッシュを取得
+        $stmt = $pdo->prepare('SELECT password_hash FROM events WHERE id = ?');
+        $stmt->execute([$event_id]);
+        $event_data = $stmt->fetch();
+        
+        if ($event_data && password_verify($password, $event_data['password_hash'])) {
+            // パスワードが正しい場合、削除実行
+            $stmt = $pdo->prepare('DELETE FROM teams WHERE id=?');
+            $stmt->execute([$delete_id]);
+            $success_message = 'チームを削除しました。';
+        } else {
+            $error_message = 'パスワードが正しくありません。';
+        }
+    } else {
+        $error_message = 'パスワードの入力が必要です。';
+    }
 }
 
 // チーム一覧取得
@@ -75,6 +92,13 @@ $teams = $stmt->fetchAll();
             <div class="breadcrumb">
                 <a href="index.php">← イベント一覧へ戻る</a>
             </div>
+
+            <?php if (isset($success_message)): ?>
+                <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
+            <?php endif; ?>
+            <?php if (isset($error_message)): ?>
+                <div class="alert alert-error"><?= htmlspecialchars($error_message) ?></div>
+            <?php endif; ?>
 
             <div class="card">
                 <div class="info-cards">
@@ -106,9 +130,7 @@ $teams = $stmt->fetchAll();
                             <td>
                                 <a href="team.php?team_id=<?= $team['id'] ?>&event_id=<?= $event_id ?>" class="btn btn-primary btn-sm">選択</a>
                                 <a href="?event_id=<?= $event_id ?>&edit_team=<?= $team['id'] ?>" class="btn btn-edit btn-sm">編集</a>
-                                <a href="?event_id=<?= $event_id ?>&delete_team=<?= $team['id'] ?>" 
-                                   onclick="return confirm('本当に削除しますか？');" 
-                                   class="btn btn-delete btn-sm">削除</a>
+                                <button type="button" onclick="showDeleteTeamForm(<?= $team['id'] ?>, '<?= htmlspecialchars($team['name'], ENT_QUOTES) ?>')" class="btn btn-delete btn-sm">削除</button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -157,7 +179,112 @@ $teams = $stmt->fetchAll();
                     </div>
                 </form>
             <?php } ?>
+            
+            <!-- チーム削除確認フォーム（モーダル） -->
+            <div id="deleteTeamModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <h3>🚨 チーム削除確認</h3>
+                    <p>チーム「<span id="deleteTeamName"></span>」を削除します。</p>
+                    <p><strong>この操作は取り消せません。チームに関連するすべての領収書、予定も削除されます。</strong></p>
+                    
+                    <form method="post">
+                        <input type="hidden" name="delete_id" id="deleteTeamId">
+                        <div class="form-group">
+                            <label>イベントパスワード</label>
+                            <input type="password" name="delete_password" required class="input" placeholder="イベント作成時に設定したパスワード">
+                            <small class="form-help">チーム削除にはイベントのパスワードが必要です</small>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" onclick="hideDeleteTeamForm()" class="btn btn-outline">キャンセル</button>
+                            <button type="submit" name="delete_team" class="btn btn-delete">削除実行</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
         </div>
     </div>
+
+    <style>
+        .form-help {
+            display: block;
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-content h3 {
+            margin-top: 0;
+            color: #e53e3e;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-weight: bold;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+
+    <?php if (isset($success_message)): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            alert('<?= addslashes($success_message) ?>');
+        });
+    </script>
+    <?php endif; ?>
+
+    <script>
+        function showDeleteTeamForm(teamId, teamName) {
+            document.getElementById('deleteTeamId').value = teamId;
+            document.getElementById('deleteTeamName').textContent = teamName;
+            document.getElementById('deleteTeamModal').style.display = 'flex';
+        }
+        
+        function hideDeleteTeamForm() {
+            document.getElementById('deleteTeamModal').style.display = 'none';
+        }
+        
+        // モーダルの背景クリックで閉じる
+        document.getElementById('deleteTeamModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDeleteTeamForm();
+            }
+        });
+    </script>
 </body>
 </html>
